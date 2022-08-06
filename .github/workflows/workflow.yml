@@ -1,0 +1,31 @@
+name: AWS example workflow
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - secrets/**
+env:
+  BUCKET_NAME : "my-test-bucket-for-this-poc"
+  AWS_REGION : "us-east-1"
+  #COMPLETE WITH THE ROLE ARN 
+  AWS_ROLE: "HERE"
+permissions:
+      id-token: write
+      contents: read   
+jobs:
+  S3PackageUpload:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git clone the repository
+        uses: actions/checkout@v3
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: ${{ env.AWS_ROLE }}
+          role-session-name: s3PutObjectFromGithubActions
+          aws-region: ${{ env.AWS_REGION }}
+      # Upload a file to AWS s3
+      - name:  Copy secret file to s3
+        run: |
+          aws s3 cp ./secrets/mypass.txt s3://${{ env.BUCKET_NAME }}/
