@@ -54,7 +54,7 @@ variable "function_filename" {
 
 # SECRET MANAGER VARIABLE
 variable "secret_name" {
-  default     = "/db_pass_secret_new"
+  default     = "/db_pass_secret"
   description = "The Secret Manager name"
   type        = string
 }
