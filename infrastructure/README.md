@@ -1,3 +1,45 @@
+# Support for secrets
+An easy way to store AWS CMK-encrypted secrets in a Git repository and sync with AWS Secret Manager.
+## How does it work?
+
+To simplify the PoC, all the necessary resources were built into Terraform.
+You have to configure the AWS credentials or add the profile with your credentials in the provider block and run the Terraform commands: 
+
+* **terraform init**
+* **terraform apply -auto-approve**
+
+The following components will be built:
+- An AWS CMK to encrypt and decrypt the secret.
+- An S3 bucket, in charge of hosting the encrypted secret and firing the lambda
+- A lambda with a Python script that will read the bucket secret, decrypt it using the key it was encrypted with, and then set it as a value in SecretManager
+- A secret in AWS Secret Manager, which any resource in AWS could use.
+- All the necessary permissions for the pipeline to work, and for AWS services to interact with each other
+
+Once all the components are created in the account, the secret must be encrypted in order to start the demo.
+**Edit** in the file: **/scripts/encrypt.py** the environment variables:
+**SECRET = 'my_db_pass'
+KEY_ALIAS = 'alias/my-key'**
+If you change the CMK alias in the terraform code, you will also need to change it here as well to match.
+Once edited, run the following command in the console.
+**python3 /path/to/file/encrypt.py**
+
+When the script finishes, go to the **'/secrets'** folder and you can see that a file called: **mypass.txt** appeared inside, which contains your secret encrypted with the AWS CMK key.
+Add the changes to the stage, commit, and push. To trigger the pipeline.
+This will run a workflow, which will put this file into AWS S3. 
+Once inside the bucket, it will raise an event that will execute the Lambda function.
+You could enter the Secret Manager and get the value to verify the operation
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 

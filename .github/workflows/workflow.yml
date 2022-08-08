@@ -8,8 +8,8 @@ on:
 env:
   BUCKET_NAME : "my-test-bucket-for-this-poc"
   AWS_REGION : "us-east-1"
-  #COMPLETE WITH THE ROLE ARN 
   AWS_ROLE: "HERE"
+
 permissions:
       id-token: write
       contents: read   
